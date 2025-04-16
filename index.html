@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <title>水有光大叔測字站 GPT整合版</title>
+  <style>
+    body { font-family: "Noto Serif TC", serif; background: #fdf8ef; color: #5c3a21; padding: 20px; }
+    .container { max-width: 800px; margin: auto; background: #fff8e7; padding: 30px; border-radius: 12px; box-shadow: 0 0 10px #ccc; position: relative; }
+    .stamp { position: absolute; top: 10px; right: 10px; background: #9c2c0f; color: white; border-radius: 50%; width: 60px; height: 60px;
+             display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; border: 2px solid white; }
+    .stamp.neutral { background: #666; }
+    button { background: #9c2c0f; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; }
+    h1 { text-align: center; color: #9c2c0f; }
+    .section { margin-top: 20px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>水有光大叔測字站 GPT整合版</h1>
+  <p>請輸入一個漢字：<input type="text" id="character" maxlength="1" /></p>
+  <p>請輸入出生年月日：<input type="date" id="birthdate" /></p>
+  <button onclick="generate()">開始測字</button>
+  <div id="result" style="display:none;">
+    <div class="stamp" id="fortuneStamp">吉</div>
+    <div class="section"><strong>抽得之字：</strong><span id="charOut"></span></div>
+    <div class="section"><strong>籤詩：</strong><pre id="poem"></pre></div>
+    <div class="section"><strong>出處典故：</strong><span id="source"></span></div>
+    <div class="section"><strong>吉凶判斷：</strong><span id="fortune"></span></div>
+    <div class="section"><strong>部首靈性分析：</strong><span id="spirit"></span></div>
+    <div class="section"><strong>生肖與流年轉運建議：</strong><span id="zodiac"></span></div>
+    <div class="section"><strong>事業：</strong><span id="career"></span></div>
+    <div class="section"><strong>功名：</strong><span id="fame"></span></div>
+    <div class="section"><strong>健康：</strong><span id="health"></span></div>
+    <div class="section"><strong>財富：</strong><span id="wealth"></span></div>
+    <div class="section"><strong>感情：</strong><span id="love"></span></div>
+    <div class="section"><strong>人際關係：</strong><span id="social"></span></div>
+    <div class="section"><strong>水有光大叔總結：</strong><span id="summary"></span></div>
+    <div class="section"><strong>三項建議：</strong>
+      <ul>
+        <li id="sug1"></li>
+        <li id="sug2"></li>
+        <li id="sug3"></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<script>
+function generate() {
+  const char = document.getElementById("character").value.trim();
+  const birthdate = document.getElementById("birthdate").value;
+  if (!char || !birthdate) return alert("請輸入完整資訊！");
+  fetch("https://script.google.com/macros/s/AKfycbzbEjbMDlSwZs5lZvhJZ1OaQ72h9DG61Hf1n2hKLtbnGChrwN0TqEIuzvaBR3lNl7l0/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ character: char, birthdate: birthdate })
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("result").style.display = "block";
+    document.getElementById("charOut").textContent = char;
+    document.getElementById("poem").textContent = data.poem;
+    document.getElementById("source").textContent = data.source;
+    document.getElementById("fortune").textContent = data.fortune;
+    document.getElementById("spirit").textContent = data.spirit;
+    document.getElementById("zodiac").textContent = data.zodiac;
+    document.getElementById("career").textContent = data.career;
+    document.getElementById("fame").textContent = data.fame;
+    document.getElementById("health").textContent = data.health;
+    document.getElementById("wealth").textContent = data.wealth;
+    document.getElementById("love").textContent = data.love;
+    document.getElementById("social").textContent = data.social;
+    document.getElementById("summary").textContent = data.summary;
+    document.getElementById("sug1").textContent = data.suggestions[0];
+    document.getElementById("sug2").textContent = data.suggestions[1];
+    document.getElementById("sug3").textContent = data.suggestions[2];
+    const stamp = document.getElementById("fortuneStamp");
+    stamp.textContent = data.fortune;
+    stamp.className = "stamp " + (["平", "凶"].includes(data.fortune) ? "neutral" : "");
+  })
+  .catch(err => {
+    alert("發生錯誤：" + err.message);
+    console.error(err);
+  });
+}
+</script>
+</body>
+</html>
